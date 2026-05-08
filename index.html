@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eduardo Velarde — Audiovisual Producer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #FF5C00;
+      --orange-dim: rgba(255,92,0,0.12);
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --bg3: #181818;
+      --text: #f0ede8;
+      --muted: #777;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* CURSOR */
+    #cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--orange);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      left: -20px; top: -20px;
+      transform: translate(-50%, -50%);
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--orange);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      left: -20px; top: -20px;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+      transition: width 0.2s, height 0.2s, opacity 0.2s;
+    }
+    body:hover #cursor, body:hover #cursor-ring { opacity: 1; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.97) 70%, transparent);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem; letter-spacing: 0.15em;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-logo span { color: var(--orange); }
+    .nav-right { display: flex; align-items: center; gap: 2rem; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .lang-toggle {
+      display: flex; border: 1px solid var(--border); overflow: hidden;
+    }
+    .lang-btn {
+      background: none; border: none; color: var(--muted);
+      font-family: 'Outfit', sans-serif; font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.38rem 0.8rem; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-btn.active { background: var(--orange); color: #fff; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 4rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 40%, rgba(255,92,0,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,92,0,0.05) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+    .hero-tag {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 1.5rem;
+      position: relative;
+      animation: fadeUp 0.8s 0.3s both;
+    }
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 13vw, 13rem);
+      line-height: 0.9; letter-spacing: 0.02em;
+      position: relative;
+      animation: fadeUp 0.9s 0.5s both;
+    }
+    .hero h1 .outline {
+      -webkit-text-stroke: 1px rgba(240,237,232,0.2);
+      color: transparent;
+    }
+    .hero-sub {
+      margin-top: 2rem; display: flex; align-items: center;
+      gap: 3rem; flex-wrap: wrap;
+      position: relative;
+      animation: fadeUp 0.9s 0.8s both;
+    }
+    .hero-desc { max-width: 360px; font-size: 0.95rem; line-height: 1.7; color: var(--muted); }
+    .hero-desc strong { color: var(--text); font-weight: 500; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-block; padding: 0.85rem 2.2rem;
+      background: var(--orange); color: #fff; text-decoration: none;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      border: none; cursor: pointer; transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: #d94e00; transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-block; padding: 0.85rem 2.2rem;
+      border: 1px solid var(--orange); color: var(--orange); text-decoration: none;
+      font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      transition: background 0.2s;
+    }
+    .btn-outline:hover { background: var(--orange-dim); }
+
+    .scroll-indicator {
+      position: absolute; bottom: 2rem; right: 4rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      animation: fadeUp 1s 1.2s both;
+    }
+    .scroll-label {
+      font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--orange), transparent);
+      animation: scrollPulse 2s ease-in-out 1.5s infinite;
+    }
+
+    /* TRUSTED */
+    .trusted {
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex; align-items: center; gap: 3rem; flex-wrap: wrap;
+    }
+    .trusted-label {
+      font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap;
+    }
+    .trusted-logos { display: flex; gap: 3rem; align-items: center; flex-wrap: wrap; }
+    .trusted-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem;
+      letter-spacing: 0.15em; color: rgba(255,255,255,0.22);
+      transition: color 0.3s;
+    }
+    .trusted-logo:hover { color: rgba(255,255,255,0.55); }
+
+    /* SECTIONS */
+    section { padding: 7rem 4rem; }
+    .section-label {
+      font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1; letter-spacing: 0.03em; margin-bottom: 3rem;
+    }
+
+    /* REELS */
+    .reel-big {
+      position: relative; padding-bottom: 42%; background: #000;
+      overflow: hidden; margin-bottom: 0.5rem;
+    }
+    .reel-big iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+    }
+    .reels-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+    .reel-small { position: relative; padding-bottom: 56.25%; background: #000; overflow: hidden; margin-bottom: 0.5rem; }
+    .reel-small iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .reel-label {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.8rem 0; border-bottom: 1px solid var(--border);
+    }
+    .reel-label h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.05em; }
+    .reel-label span { font-size: 0.7rem; color: var(--orange); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* PROJECTS */
+    .personal-projects { background: var(--bg2); }
+    .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .project-card {
+      background: var(--bg3); border: 1px solid var(--border); overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .project-card:hover { transform: translateY(-4px); border-color: rgba(255,92,0,0.35); }
+    .project-thumb { position: relative; overflow: hidden; background: #000; }
+    .project-thumb img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+      filter: brightness(0.75); transition: filter 0.3s, transform 0.4s;
+    }
+    .project-card:hover .project-thumb img { filter: brightness(1); transform: scale(1.04); }
+    .play-overlay {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s; background: rgba(0,0,0,0.35);
+    }
+    .project-card:hover .play-overlay { opacity: 1; }
+    .play-btn {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--orange);
+      display: flex; align-items: center; justify-content: center; text-decoration: none;
+    }
+    .play-btn svg { width: 20px; height: 20px; fill: #fff; margin-left: 3px; }
+    .project-info { padding: 1.4rem; }
+    .project-tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.5rem; }
+    .project-info h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+    .project-info p { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+    .project-link {
+      display: inline-block; margin-top: 1rem; font-size: 0.72rem;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange);
+      text-decoration: none; border-bottom: 1px solid rgba(255,92,0,0.3); padding-bottom: 1px;
+    }
+
+    /* CLIENT WORK */
+    .client-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+    }
+    .client-card { background: var(--bg); position: relative; overflow: hidden; aspect-ratio: 4/3; }
+    .client-card img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: brightness(0.45) saturate(0.3);
+      transition: filter 0.4s, transform 0.5s;
+    }
+    .client-card:hover img { filter: brightness(0.65) saturate(0.7); transform: scale(1.05); }
+    .client-overlay {
+      position: absolute; inset: 0; padding: 1.5rem;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+    }
+    .client-tag-sm { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.3rem; }
+    .client-overlay h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.05em; }
+    .client-overlay p { font-size: 0.78rem; color: rgba(255,255,255,0.55); margin-top: 0.3rem; }
+
+    /* MARCA 360 */
+    .marca360 { background: var(--bg2); }
+    .marca-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .marca-badge {
+      display: inline-block; background: var(--orange); color: #fff;
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.35rem 1rem; margin-bottom: 1.5rem;
+    }
+    .marca-left h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 4vw, 4rem); line-height: 1; margin-bottom: 1.5rem; }
+    .marca-left p { font-size: 0.9rem; color: var(--muted); line-height: 1.8; margin-bottom: 2rem; }
+    .marca-includes { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+    .marca-includes li { display: flex; gap: 0.8rem; font-size: 0.88rem; color: #aaa; line-height: 1.5; }
+    .marca-includes li::before { content: '→'; color: var(--orange); flex-shrink: 0; }
+
+    /* FORM */
+    .form-box { background: var(--bg3); border: 1px solid var(--border); padding: 2.5rem; }
+    .form-box h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.05em; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: var(--bg2); border: 1px solid var(--border);
+      color: var(--text); padding: 0.75rem 1rem;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--orange); }
+    .form-group select option { background: var(--bg2); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .wa-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.8rem; background: #25D366; color: #fff;
+      font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border: none; cursor: pointer; transition: background 0.2s;
+    }
+    .wa-btn:hover { background: #1da851; }
+    .wa-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+
+    /* TESTIMONIALS */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .t-card {
+      background: var(--bg2); border: 1px solid var(--border); padding: 2rem;
+      transition: border-color 0.3s;
+    }
+    .t-card:hover { border-color: rgba(255,92,0,0.25); }
+    .t-card.featured { background: var(--bg3); border-color: rgba(255,92,0,0.18); }
+    .quote { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; color: var(--orange); line-height: 0.7; margin-bottom: 1rem; opacity: 0.55; }
+    .t-card p { font-size: 0.87rem; color: #999; line-height: 1.78; margin-bottom: 1.5rem; font-style: italic; }
+    .t-author { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .t-author strong { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .t-author span { font-size: 0.7rem; color: var(--orange); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* CONTACT */
+    .contact-inner { display: flex; justify-content: space-between; align-items: center; gap: 3rem; flex-wrap: wrap; }
+    .contact-left h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 6vw, 6rem); line-height: 0.95; margin-bottom: 1.5rem; }
+    .contact-left h2 span { color: var(--orange); }
+    .contact-email {
+      display: inline-block; font-size: 1rem; color: var(--text); text-decoration: none;
+      border-bottom: 1px solid var(--orange); padding-bottom: 2px;
+      transition: color 0.2s; margin-bottom: 2rem;
+    }
+    .contact-email:hover { color: var(--orange); }
+    .socials { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .social-link {
+      display: inline-flex; padding: 0.55rem 1.1rem;
+      border: 1px solid var(--border); color: var(--muted); text-decoration: none;
+      font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .social-link:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 4rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.78rem; color: var(--muted); }
+    footer span { color: var(--orange); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(35px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* KEYFRAMES */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%   { opacity: 0; transform: scaleY(0); transform-origin: top; }
+      50%  { opacity: 1; transform: scaleY(1); transform-origin: top; }
+      100% { opacity: 0; transform: scaleY(1); transform-origin: bottom; }
+    }
+
+    /* HAMBURGER MENU */
+    .hamburger {
+      display: none;
+      flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px; cursor: pointer;
+      background: none; border: none; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 100%; height: 1.5px;
+      background: var(--text); transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* MOBILE MENU OVERLAY */
+    .mobile-menu {
+      display: none;
+      position: fixed; inset: 0; z-index: 99;
+      background: rgba(10,10,10,0.98);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.5rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem; letter-spacing: 0.12em;
+      color: var(--text); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--orange); }
+    .mobile-lang {
+      display: flex; border: 1px solid var(--border); overflow: hidden; margin-top: 1rem;
+    }
+    .mobile-lang button {
+      background: none; border: none; color: var(--muted);
+      font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.5rem 1.2rem; cursor: pointer; transition: background 0.2s, color 0.2s;
+    }
+    .mobile-lang button.active { background: var(--orange); color: #fff; }
+
+    /* TABLET */
+    @media (max-width: 1024px) {
+      .projects-grid, .client-grid, .testimonials-grid { grid-template-columns: 1fr 1fr; }
+      .marca-inner { grid-template-columns: 1fr; gap: 3rem; }
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      /* Nav */
+      nav { padding: 1.1rem 1.5rem; }
+      .nav-right { gap: 1rem; }
+      .nav-links { display: none; }
+      .lang-toggle { display: none; }
+      .hamburger { display: flex; }
+
+      /* Hero */
+      .hero { padding: 0 1.5rem 4rem; min-height: 100svh; }
+      .hero h1 { font-size: clamp(4rem, 18vw, 7rem); }
+      .hero-tag { font-size: 0.65rem; letter-spacing: 0.15em; }
+      .hero-sub { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+      .hero-desc { font-size: 0.9rem; }
+      .hero-btns { width: 100%; }
+      .hero-btns .btn-primary,
+      .hero-btns .btn-outline { width: 100%; text-align: center; padding: 1rem; font-size: 0.85rem; }
+      .scroll-indicator { display: none; }
+
+      /* Trusted */
+      .trusted { padding: 1.5rem; flex-direction: column; gap: 1rem; }
+      .trusted-logos { gap: 1.5rem; }
+
+      /* Sections */
+      section { padding: 4rem 1.5rem; }
+      .section-title { font-size: 2.2rem; margin-bottom: 2rem; }
+
+      /* Reels */
+      .reel-big { padding-bottom: 56.25%; }
+      .reels-side { grid-template-columns: 1fr; gap: 1rem; }
+
+      /* Projects */
+      .projects-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .project-thumb img { height: 180px; }
+
+      /* Client grid */
+      .client-grid { grid-template-columns: 1fr; }
+      .client-card { aspect-ratio: 16/9; }
+
+      /* Marca 360 */
+      .marca-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .marca-left h2 { font-size: 3rem; }
+      .form-box { padding: 1.5rem; }
+      .form-btns { flex-direction: column; }
+      .form-btns .btn-primary,
+      .form-btns .wa-btn { width: 100%; justify-content: center; padding: 1rem; }
+
+      /* Testimonials */
+      .testimonials-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+      /* Contact */
+      .contact-inner { flex-direction: column; gap: 2rem; }
+      .contact-left h2 { font-size: 3rem; }
+
+      /* Footer */
+      footer { flex-direction: column; gap: 0.8rem; text-align: center; padding: 2rem 1.5rem; }
+    }
+
+    /* SMALL PHONES */
+    @media (max-width: 380px) {
+      .hero h1 { font-size: 3.5rem; }
+      .section-title { font-size: 1.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- MOBILE MENU OVERLAY -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#reels"        data-en="Reels"     data-es="Reels"     onclick="closeMobileMenu()">Reels</a>
+  <a href="#projects"     data-en="Projects"  data-es="Proyectos" onclick="closeMobileMenu()">Projects</a>
+  <a href="#clients"      data-en="Clients"   data-es="Clientes"  onclick="closeMobileMenu()">Clients</a>
+  <a href="#marca360"     data-en="Marca 360" data-es="Marca 360" onclick="closeMobileMenu()">Marca 360</a>
+  <a href="#testimonials" data-en="Reviews"   data-es="Reseñas"   onclick="closeMobileMenu()">Reviews</a>
+  <a href="#contact"      data-en="Contact"   data-es="Contacto"  onclick="closeMobileMenu()">Contact</a>
+  <div class="mobile-lang">
+    <button class="active" id="mobileBtnEN" onclick="setLang('en')">EN</button>
+    <button              id="mobileBtnES" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo">EV<span>.</span></a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#reels"        data-en="Reels"     data-es="Reels">Reels</a></li>
+      <li><a href="#projects"     data-en="Projects"  data-es="Proyectos">Projects</a></li>
+      <li><a href="#clients"      data-en="Clients"   data-es="Clientes">Clients</a></li>
+      <li><a href="#marca360"     data-en="Marca 360" data-es="Marca 360">Marca 360</a></li>
+      <li><a href="#testimonials" data-en="Reviews"   data-es="Reseñas">Reviews</a></li>
+      <li><a href="#contact"      data-en="Contact"   data-es="Contacto">Contact</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnEN" onclick="setLang('en')">EN</button>
+      <button class="lang-btn"        id="btnES" onclick="setLang('es')">ES</button>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <p class="hero-tag"
+     data-en="Audiovisual Producer · Digital Strategist · Content Creator"
+     data-es="Productor Audiovisual · Estratega Digital · Creador de Contenido">
+    Audiovisual Producer · Digital Strategist · Content Creator
+  </p>
+
+  <h1>EDUARDO<br><span class="outline">VELARDE</span></h1>
+
+  <div class="hero-sub">
+    <p class="hero-desc"
+       data-en="Crafting <strong>compelling visual stories</strong> for brands and creators. From production to strategy — content built to perform."
+       data-es="Creando <strong>historias visuales impactantes</strong> para marcas y creadores. De la producción a la estrategia — contenido hecho para destacar.">
+      Crafting <strong>compelling visual stories</strong> for brands and creators. From production to strategy — content built to perform.
+    </p>
+    <div class="hero-btns">
+      <a href="#reels"    class="btn-primary" data-en="View My Work"       data-es="Ver Mi Trabajo">View My Work</a>
+      <a href="#marca360" class="btn-outline">Marca Digital 360°</a>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span class="scroll-label" data-en="Scroll" data-es="Bajar">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TRUSTED BY -->
+<div class="trusted">
+  <span class="trusted-label" data-en="Trusted by" data-es="Han confiado en mí">Trusted by</span>
+  <div class="trusted-logos">
+    <span class="trusted-logo">ITU · UN Geneva</span>
+    <span class="trusted-logo">Corporación Trinacria</span>
+    <span class="trusted-logo">Bellakeo PuntoCom</span>
+    <span class="trusted-logo">WSIS Forum 2022</span>
+  </div>
+</div>
+
+<!-- REELS -->
+<section id="reels">
+  <div class="reveal">
+    <p class="section-label" data-en="Showreels" data-es="Showreels">Showreels</p>
+    <h2 class="section-title" data-en="THE WORK" data-es="EL TRABAJO">THE WORK</h2>
+  </div>
+
+  <div class="reveal">
+    <!-- BIG REEL -->
+    <div class="reel-big">
+      <iframe src="https://player.vimeo.com/video/506604629?color=ff5c00&title=0&byline=0&portrait=0"
+              allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="reel-label">
+      <h4>Show Reel Audiovisual</h4>
+      <span data-en="Audiovisual Production" data-es="Producción Audiovisual">Audiovisual Production</span>
+    </div>
+
+    <!-- SIDE REELS -->
+    <div class="reels-side">
+      <div>
+        <div class="reel-small">
+          <iframe src="https://player.vimeo.com/video/741854872?color=ff5c00&title=0&byline=0&portrait=0"
+                  allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div class="reel-label">
+          <h4>Editor Reel</h4>
+          <span data-en="Video Editing" data-es="Edición de Video">Video Editing</span>
+        </div>
+      </div>
+      <div>
+        <div class="reel-small">
+          <iframe src="https://www.youtube.com/embed/fivwbQQ7uUs"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <div class="reel-label">
+          <h4>Vertical Edit Reel</h4>
+          <span data-en="Social Media" data-es="Redes Sociales">Social Media</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAL PROJECTS -->
+<section class="personal-projects" id="projects">
+  <div class="reveal">
+    <p class="section-label" data-en="Personal Projects" data-es="Proyectos Personales">Personal Projects</p>
+    <h2 class="section-title" data-en="FEATURED WORK" data-es="TRABAJO DESTACADO">FEATURED WORK</h2>
+  </div>
+
+  <div class="projects-grid reveal">
+    <!-- VOLCAN -->
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="https://static.wixstatic.com/media/4aac15_ba1f8ee646a74f019a686c39092eec0a~mv2.png/v1/fill/w_600,h_400,fp_0.5_0.28,q_85/4aac15_ba1f8ee646a74f019a686c39092eec0a~mv2.png" alt="Volcan de Fuego" loading="lazy" />
+        <div class="play-overlay">
+          <a href="https://www.youtube.com/watch?v=vzNY_TsvZ8I" target="_blank" class="play-btn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="project-info">
+        <p class="project-tag" data-en="Short Documentary" data-es="Cortometraje Documental">Short Documentary</p>
+        <h3>Volcán De Fuego</h3>
+        <p data-en="A short documentary capturing the raw power and human stories surrounding Guatemala's most active volcano."
+           data-es="Un documental que captura la fuerza del volcán más activo de Guatemala y las historias humanas a su alrededor.">
+          A short documentary capturing the raw power and human stories surrounding Guatemala's most active volcano.
+        </p>
+        <a href="https://www.youtube.com/watch?v=vzNY_TsvZ8I" target="_blank" class="project-link"
+           data-en="Watch Film →" data-es="Ver Película →">Watch Film →</a>
+      </div>
+    </div>
+
+    <!-- DILEMA -->
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="https://static.wixstatic.com/media/4aac15_b96696e623fa46688107bb2e26522955~mv2.png/v1/fill/w_600,h_400,q_85/4aac15_b96696e623fa46688107bb2e26522955~mv2.png" alt="El Dilema del Arte" loading="lazy" />
+        <div class="play-overlay">
+          <a href="https://www.youtube.com/watch?v=H3NPCK-zADM" target="_blank" class="play-btn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="project-info">
+        <p class="project-tag" data-en="Short Film" data-es="Cortometraje">Short Film</p>
+        <h3>El Dilema Del Arte</h3>
+        <p data-en="A short film exploring the tension between artistic integrity and commercial pressure in the creative world."
+           data-es="Un cortometraje que explora la tensión entre la integridad artística y la presión comercial en el mundo creativo.">
+          A short film exploring the tension between artistic integrity and commercial pressure in the creative world.
+        </p>
+        <a href="https://www.youtube.com/watch?v=H3NPCK-zADM" target="_blank" class="project-link"
+           data-en="Watch Film →" data-es="Ver Cortometraje →">Watch Film →</a>
+      </div>
+    </div>
+
+    <!-- VIDEOJUEGO -->
+    <div class="project-card">
+      <div class="project-thumb">
+        <img src="https://static.wixstatic.com/media/4aac15_23399df4e9024ec1937b9aa8ab1ea796~mv2.png/v1/fill/w_600,h_400,q_85/4aac15_23399df4e9024ec1937b9aa8ab1ea796~mv2.png" alt="Marketing Campaign" loading="lazy" />
+        <div class="play-overlay">
+          <a href="https://www.youtube.com/watch?v=7HnvlqtgLVo" target="_blank" class="play-btn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="project-info">
+        <p class="project-tag" data-en="Marketing & Communication" data-es="Marketing y Comunicación">Marketing & Communication</p>
+        <h3>Video Game Campaign</h3>
+        <p data-en="Full marketing and advertising strategy for a video game demo — trailers, brand identity, and digital campaign."
+           data-es="Estrategia completa de marketing para un demo de videojuego — trailers, identidad de marca y campaña digital.">
+          Full marketing and advertising strategy for a video game demo — trailers, brand identity, and digital campaign.
+        </p>
+        <a href="https://www.youtube.com/watch?v=7HnvlqtgLVo" target="_blank" class="project-link"
+           data-en="Watch Campaign →" data-es="Ver Campaña →">Watch Campaign →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENT WORK -->
+<section id="clients">
+  <div class="reveal">
+    <p class="section-label" data-en="Client Work" data-es="Trabajo con Clientes">Client Work</p>
+    <h2 class="section-title" data-en="WHAT YOUR PROJECT COULD LOOK LIKE" data-es="ASÍ PODRÍA VERSE TU PROYECTO">WHAT YOUR PROJECT COULD LOOK LIKE</h2>
+  </div>
+
+  <div class="client-grid reveal">
+    <div class="client-card">
+      <img src="https://static.wixstatic.com/media/4aac15_2e0b5e880e004584b6edba6da5ddac9d~mv2.png/v1/fill/w_600,h_450,q_85/4aac15_2e0b5e880e004584b6edba6da5ddac9d~mv2.png" alt="Videography" loading="lazy" />
+      <div class="client-overlay">
+        <p class="client-tag-sm" data-en="Videography & Editing" data-es="Videografía y Edición">Videography & Editing</p>
+        <h3 data-en="Event Coverage" data-es="Cobertura de Eventos">Event Coverage</h3>
+        <p data-en="Professional video capture & post-production" data-es="Captura de video profesional y post-producción">Professional video capture & post-production</p>
+      </div>
+    </div>
+    <div class="client-card">
+      <img src="https://static.wixstatic.com/media/4aac15_d843c54b7ee241cfa7c5a00227b1df24~mv2.png/v1/fill/w_600,h_450,q_85/4aac15_d843c54b7ee241cfa7c5a00227b1df24~mv2.png" alt="Corporate" loading="lazy" />
+      <div class="client-overlay">
+        <p class="client-tag-sm" data-en="Corporate" data-es="Corporativo">Corporate</p>
+        <h3 data-en="Brand Positioning" data-es="Posicionamiento de Marca">Brand Positioning</h3>
+        <p data-en="Strategic audiovisual content for companies" data-es="Contenido audiovisual estratégico para empresas">Strategic audiovisual content for companies</p>
+      </div>
+    </div>
+    <div class="client-card">
+      <img src="https://static.wixstatic.com/media/4aac15_58f58890cda848ba8e5196dada6e17f7~mv2.jpg/v1/fill/w_600,h_450,fp_0.64_0.51,q_85/4aac15_58f58890cda848ba8e5196dada6e17f7~mv2.jpg" alt="Social Media" loading="lazy" />
+      <div class="client-overlay">
+        <p class="client-tag-sm" data-en="Social Media" data-es="Redes Sociales">Social Media</p>
+        <h3 data-en="Content Strategy" data-es="Estrategia de Contenido">Content Strategy</h3>
+        <p data-en="Scroll-stopping content for every platform" data-es="Contenido que detiene el scroll en cada plataforma">Scroll-stopping content for every platform</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARCA DIGITAL 360 -->
+<section class="marca360" id="marca360">
+  <div class="marca-inner">
+    <div class="marca-left reveal">
+      <div class="marca-badge" data-en="All-In-One Package" data-es="Paquete Todo-En-Uno">All-In-One Package</div>
+      <h2>MARCA<br>DIGITAL<br><span style="color:var(--orange)">360°</span></h2>
+      <p data-en="Everything your brand needs to dominate the digital space — from content creation to community management and paid media. One partner, complete execution."
+         data-es="Todo lo que tu marca necesita para dominar el espacio digital — desde la creación de contenido hasta el manejo de redes y medios pagados. Un socio, ejecución completa.">
+        Everything your brand needs to dominate the digital space — from content creation to community management and paid media. One partner, complete execution.
+      </p>
+      <ul class="marca-includes">
+        <li data-en="Social media video production (Reels, TikToks, YouTube Shorts)" data-es="Producción de video para redes (Reels, TikToks, YouTube Shorts)">Social media video production (Reels, TikToks, YouTube Shorts)</li>
+        <li data-en="Professional video editing for all formats & platforms" data-es="Edición de video profesional para todos los formatos">Professional video editing for all formats & platforms</li>
+        <li data-en="Social media management & community growth" data-es="Manejo de redes sociales y crecimiento de comunidad">Social media management & community growth</li>
+        <li data-en="Paid advertising strategy & campaign execution (Ads)" data-es="Estrategia de publicidad pagada y ejecución de campañas (Ads)">Paid advertising strategy & campaign execution (Ads)</li>
+        <li data-en="Custom website design & development" data-es="Diseño y desarrollo de sitio web personalizado">Custom website design & development</li>
+        <li data-en="Brand identity & visual consistency across channels" data-es="Identidad de marca y consistencia visual en todos los canales">Brand identity & visual consistency across channels</li>
+        <li data-en="Monthly performance reports & strategy reviews" data-es="Reportes mensuales de rendimiento y revisión de estrategia">Monthly performance reports & strategy reviews</li>
+      </ul>
+    </div>
+
+    <div class="reveal">
+      <div class="form-box">
+        <h3 data-en="GET A QUOTE" data-es="SOLICITA UN PRESUPUESTO">GET A QUOTE</h3>
+        <div class="form-group">
+          <label data-en="Your Name" data-es="Tu Nombre">Your Name</label>
+          <input type="text" id="fname" placeholder="John Smith" />
+        </div>
+        <div class="form-group">
+          <label data-en="Email Address" data-es="Correo Electrónico">Email Address</label>
+          <input type="email" id="femail" placeholder="you@company.com" />
+        </div>
+        <div class="form-group">
+          <label data-en="Service" data-es="Servicio">Service</label>
+          <select id="fservice">
+            <option value="" data-en="Select a service..." data-es="Selecciona un servicio...">Select a service...</option>
+            <option value="Marca Digital 360° (Full Package)">🔥 Marca Digital 360° (Full Package)</option>
+            <option value="Social Media Video Production" data-en="Social Media Video Production" data-es="Producción de Video para Redes">Social Media Video Production</option>
+            <option value="Video Editing" data-en="Video Editing" data-es="Edición de Video">Video Editing</option>
+            <option value="Digital Marketing & Ads">Digital Marketing & Ads</option>
+            <option value="Website Design & Development" data-en="Website Design & Development" data-es="Diseño y Desarrollo Web">Website Design & Development</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-en="Tell me about your project" data-es="Cuéntame sobre tu proyecto">Tell me about your project</label>
+          <textarea id="fmessage"
+            data-ph-en="What are you looking to achieve?"
+            data-ph-es="¿Qué quieres lograr?"
+            placeholder="What are you looking to achieve?"></textarea>
+        </div>
+        <div class="form-btns">
+          <button class="btn-primary" onclick="sendEmail()"
+                  data-en="Send via Email" data-es="Enviar por Email">Send via Email</button>
+          <button class="wa-btn" onclick="sendWhatsApp()">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.116 1.523 5.845L.057 23.882l6.204-1.437A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.812 9.812 0 01-5.007-1.371l-.36-.213-3.681.853.885-3.563-.235-.374A9.818 9.818 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="reveal">
+    <p class="section-label" data-en="Client Reviews" data-es="Reseñas de Clientes">Client Reviews</p>
+    <h2 class="section-title" data-en="WHAT THEY SAY" data-es="LO QUE DICEN">WHAT THEY SAY</h2>
+  </div>
+  <div class="testimonials-grid reveal">
+    <div class="t-card featured">
+      <div class="quote">"</div>
+      <p data-en="Eduardo performed all his duties to the full satisfaction of his supervisors and proved a valuable addition to the WSIS team. He produced great videos showcased during the WSIS Forum 2022."
+         data-es="Eduardo cumplió todas sus funciones a plena satisfacción de sus supervisores y fue una valiosa incorporación al equipo WSIS. Produjo excelentes videos presentados en el Foro WSIS 2022.">
+        Eduardo performed all his duties to the full satisfaction of his supervisors and proved a valuable addition to the WSIS team. He produced great videos showcased during the WSIS Forum 2022.
+      </p>
+      <div class="t-author">
+        <strong>Malcolm Johnson</strong>
+        <span>Deputy Secretary-General · ITU, United Nations — Geneva</span>
+      </div>
+    </div>
+    <div class="t-card">
+      <div class="quote">"</div>
+      <p data-en="Eduardo demonstrated to be proactive and easy to work with. His dedication and commitment to excellence were fundamental to the success of our marketing initiatives."
+         data-es="Eduardo demostró ser proactivo y fácil de tratar. Su dedicación y compromiso con la excelencia fueron fundamentales para el éxito de nuestras iniciativas de marketing.">
+        Eduardo demonstrated to be proactive and easy to work with. His dedication and commitment to excellence were fundamental to the success of our marketing initiatives.
+      </p>
+      <div class="t-author">
+        <strong>Giovanni Badalamenti</strong>
+        <span>CFO · Corporación Trinacria</span>
+      </div>
+    </div>
+    <div class="t-card">
+      <div class="quote">"</div>
+      <p data-en="Eduardo stood out for his creativity, commitment, and technical skill. His professionalism and ability to work under pressure make him an indispensable resource in any team."
+         data-es="Eduardo destacó por su creatividad, compromiso y habilidad técnica. Su profesionalismo y capacidad para trabajar bajo presión lo hacen un recurso indispensable en cualquier equipo.">
+        Eduardo stood out for his creativity, commitment, and technical skill. His professionalism and ability to work under pressure make him an indispensable resource in any team.
+      </p>
+      <div class="t-author">
+        <strong>Luis Rolando Nuñez</strong>
+        <span>CCO · Bellakeo PuntoCom</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="background:var(--bg2)">
+  <div class="contact-inner">
+    <div class="contact-left reveal">
+      <p class="section-label" data-en="Let's Talk" data-es="Hablemos">Let's Talk</p>
+      <h2>LET'S<br>CREATE<br><span>TOGETHER</span></h2>
+      <a href="mailto:eduardo.velg97@gmail.com" class="contact-email">eduardo.velg97@gmail.com</a>
+      <div class="socials">
+        <a href="https://www.linkedin.com/in/eduardo-velarde"  class="social-link" target="_blank">LinkedIn</a>
+        <a href="https://youtube.com/@edupoohvlogs"            class="social-link" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/edupoohvlogs"       class="social-link" target="_blank">Instagram</a>
+        <a href="https://www.tiktok.com/@edupoohvlg"           class="social-link" target="_blank">TikTok</a>
+      </div>
+    </div>
+    <div class="reveal" style="text-align:center">
+      <p style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.2em;color:var(--muted);margin-bottom:1.2rem;"
+         data-en="OR REACH ME DIRECTLY" data-es="O CONTÁCTAME DIRECTO">OR REACH ME DIRECTLY</p>
+      <a href="https://wa.me/50235745646" target="_blank" class="wa-btn" style="display:inline-flex;text-decoration:none;font-size:0.9rem;padding:1rem 2rem;">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#fff;flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.122.554 4.116 1.523 5.845L.057 23.882l6.204-1.437A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.812 9.812 0 01-5.007-1.371l-.36-.213-3.681.853.885-3.563-.235-.374A9.818 9.818 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
+        <span data-en="Chat on WhatsApp" data-es="Chatear en WhatsApp">Chat on WhatsApp</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>Eduardo Velarde</span>. All rights reserved.</p>
+  <p data-en="Audiovisual Producer · Digital Strategist · Guatemala"
+     data-es="Productor Audiovisual · Estratega Digital · Guatemala">
+    Audiovisual Producer · Digital Strategist · Guatemala
+  </p>
+</footer>
+
+<script>
+  // ── HAMBURGER MENU ───────────────────────────────────────────
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const ham  = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    ham.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── CURSOR ───────────────────────────────────────────────────
+  const cur  = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left = mx + 'px';
+    cur.style.top  = my + 'px';
+  });
+
+  function tickRing() {
+    rx += (mx - rx) * 0.13;
+    ry += (my - ry) * 0.13;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(tickRing);
+  }
+  tickRing();
+
+  // Hide default cursor only when mouse enters the page
+  document.documentElement.style.cursor = 'none';
+
+  // ── SCROLL REVEAL ────────────────────────────────────────────
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ── LANGUAGE TOGGLE ──────────────────────────────────────────
+  function setLang(lang) {
+    // Desktop buttons
+    document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+    document.getElementById('btnES').classList.toggle('active', lang === 'es');
+    // Mobile buttons
+    document.getElementById('mobileBtnEN').classList.toggle('active', lang === 'en');
+    document.getElementById('mobileBtnES').classList.toggle('active', lang === 'es');
+
+    // Swap text content for every [data-en] / [data-es] element
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const val = el.getAttribute('data-' + lang);
+      if (val !== null) el.innerHTML = val;
+    });
+
+    // Swap textarea placeholder
+    document.querySelectorAll('[data-ph-en]').forEach(el => {
+      el.placeholder = el.getAttribute('data-ph-' + lang) || '';
+    });
+  }
+
+  // ── FORM ─────────────────────────────────────────────────────
+  function sendEmail() {
+    const name    = document.getElementById('fname').value.trim();
+    const email   = document.getElementById('femail').value.trim();
+    const service = document.getElementById('fservice').value;
+    const message = document.getElementById('fmessage').value.trim();
+    if (!name || !email || !service) { alert('Please fill in your name, email, and service.'); return; }
+    const subject = encodeURIComponent('Project Inquiry — ' + service);
+    const body    = encodeURIComponent('Hi Eduardo,\n\nMy name is ' + name + ' (' + email + ').\n\nService: ' + service + '\n\n' + message);
+    window.location.href = 'mailto:eduardo.velg97@gmail.com?subject=' + subject + '&body=' + body;
+  }
+
+  function sendWhatsApp() {
+    const name    = document.getElementById('fname').value.trim();
+    const service = document.getElementById('fservice').value;
+    const message = document.getElementById('fmessage').value.trim();
+    let text = "Hi Eduardo! I found your portfolio and I'm interested in your services.";
+    if (name)    text += '\n\nMy name is ' + name + '.';
+    if (service) text += '\nInterested in: ' + service + '.';
+    if (message) text += '\n\n' + message;
+    window.open('https://wa.me/50235745646?text=' + encodeURIComponent(text), '_blank');
+  }
+</script>
+</body>
+</html>
